@@ -55,12 +55,26 @@ def categoriesJSON():
 @app.route('/catalog/<int:item_id>/edit/', methods=['GET', 'POST'])
 def item_Edit(item_id):
 	item_tobe_Edited = session.query(Item).filter_by(id=item_id).one()
-	category_of_item = session.query(Category).filter_by(id=item_tobe_Edited.category_id).one()
 	categories = session.query(Category).all()
+
 	if request.method == 'GET':
-		return render_template('edit_item.html', item_tobe_Edited=item_tobe_Edited, category_of_item=category_of_item, categories=categories)
+		return render_template('edit_item.html', item_tobe_Edited=item_tobe_Edited, 
+								category_of_item=item_tobe_Edited.category_id, 
+								categories=categories)
+
 	if request.method == 'POST':
-		return 'Edit selected category.'
+		if request.form['name']:
+		    item_tobe_Edited.name = request.form['name']
+		if request.form['description']:
+		    item_tobe_Edited.description = request.form['description']
+		if request.form['category_id']:
+		    item_tobe_Edited.category_id = request.form['category_id']
+
+        session.add(item_tobe_Edited)
+        session.commit()
+
+        return redirect(url_for('catalog_Items_All', category_id=item_tobe_Edited.category_id))
+
 
 # Add a new catalog item.  
 @app.route('/catalog/items/new/', methods=['GET', 'POST'])
