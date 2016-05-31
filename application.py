@@ -54,7 +54,7 @@ def categoriesJSON():
 # EDIT items.
 @app.route('/catalog/<int:item_id>/edit/', methods=['GET', 'POST'])
 def item_Edit(item_id):
-	
+
 	item_tobe_Edited = session.query(Item).filter_by(id=item_id).one()
 	categories = session.query(Category).all()
 
@@ -73,7 +73,7 @@ def item_Edit(item_id):
 
         session.add(item_tobe_Edited)
         session.commit()
-
+        flash('You successfully edited an item')
         return redirect(url_for('catalog_Items_All', 
         						category_id=item_tobe_Edited.category_id))
 
@@ -96,14 +96,19 @@ def item_Add():
 			)
         session.add(newItem)
         session.commit()
-        return redirect(url_for('home'))
-# Delete
+        flash('You successfully added an item.')
+        return redirect(url_for('catalog_Items_All', 
+        						category_id=newItem.category_id))
+# Delete an item.
 @app.route('/catalog/<int:item_id>/delete/',  methods=['GET', 'POST'])
 def item_Delete(item_id):
+
 	if request.method =='GET':
 		item_tobe_Deleted = session.query(Item).filter_by(id = item_id).one()
 		item_category = session.query(Category).filter_by(id = item_tobe_Deleted.category_id).one()
+		
 		return render_template('delete_item.html', item = item_tobe_Deleted, item_category=item_category)
+
 	if request.method =='POST':
 		delete_item = session.query(Item).filter_by(id = item_id).one()
 		item_category = session.query(Category).filter_by(id = delete_item.category_id).one()
@@ -111,7 +116,9 @@ def item_Delete(item_id):
 		session.commit()
 		allItems_Category = session.query(Item).filter_by(category_id=item_category.id).all()
 		category = session.query(Category).filter_by(id=item_category.id).first()
-		return render_template('category_items.html', items=allItems_Category, category_name = category.name , category_id=category.id)
+		flash('You successfully deleted an item.')
+		return redirect(url_for('catalog_Items_All', 
+        						category_id=category.id))
 
 # Description for item within a category.
 @app.route('/catalog/<int:category_id>/<int:item_id>/')
