@@ -54,6 +54,7 @@ def categoriesJSON():
 # EDIT items.
 @app.route('/catalog/<int:item_id>/edit/', methods=['GET', 'POST'])
 def item_Edit(item_id):
+	
 	item_tobe_Edited = session.query(Item).filter_by(id=item_id).one()
 	categories = session.query(Category).all()
 
@@ -73,7 +74,8 @@ def item_Edit(item_id):
         session.add(item_tobe_Edited)
         session.commit()
 
-        return redirect(url_for('catalog_Items_All', category_id=item_tobe_Edited.category_id))
+        return redirect(url_for('catalog_Items_All', 
+        						category_id=item_tobe_Edited.category_id))
 
 
 # Add a new catalog item.  
