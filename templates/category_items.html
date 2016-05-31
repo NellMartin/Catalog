@@ -1,0 +1,17 @@
+<html>
+<head>
+	<link rel=stylesheet type=text/css href="{{ url_for('static', filename='style.css') }}">
+	<title>Catalog Item Application</title>
+	<h1>Items in Catalog - {{category_name}}</h1>
+</head>
+
+<body>
+
+	{% for each in items %}
+	<a href = "{{url_for('catalog_Items_Description', category_id = each.category_id, item_id = each.id)}}" style="text-decoration:none"><p>{{each.name}}</p></a>
+	
+	{% endfor %}
+</body>
+
+
+</html>

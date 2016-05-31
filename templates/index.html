@@ -1,0 +1,20 @@
+<html>
+<head>
+	<link rel=stylesheet type=text/css href="{{ url_for('static', filename='style.css') }}">
+	<h1>Catalog Item Application</h1>
+</head>
+
+<body>
+	<a href="{{url_for('item_Add')}}"><p>Add Catalog Item</p></a>
+	{% for eachC in categories %}
+	<a href = "{{url_for('catalog_Items_All', category_id = eachC.id)}}" style="text-decoration:none"><h2>{{eachC.name}}</h2></a>
+	{% endfor %}
+
+	{% for each in items %}
+	<a href = "{{url_for('catalog_Items_Description', category_id = each.category_id, item_id = each.id)}}" style="text-decoration:none"><p>{{each.name}}{{each.category_id}}</p></a>
+	
+	{% endfor %}
+</body>
+
+
+</html>
