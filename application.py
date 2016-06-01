@@ -4,8 +4,7 @@ from sqlalchemy import create_engine, asc, desc
 from sqlalchemy.orm import sessionmaker
 from database_catalog_setup import Base, Item, Category
 from flask import session as login_session
-import random
-import string
+import random, string
 from oauth2client.client import flow_from_clientsecrets
 from oauth2client.client import FlowExchangeError
 import httplib2
@@ -24,6 +23,16 @@ Base.metadata.bind = engine
 
 DBSession = sessionmaker(bind=engine)
 session = DBSession()
+
+# Oauth routes handling.
+# Create a state token to prevent request forgery.
+# Store it in the sessioni for later validation.
+@app.route('/login')
+def showLogin():
+    state = ''.join(random.choice(string.ascii_uppercase + string.digits)
+                    for x in xrange(32))
+    login_session['state'] = state
+    return "The current session state is %s" % login_session['state']
 
 
 # Home.  Display all categories with latest items.
