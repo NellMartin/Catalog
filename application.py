@@ -99,6 +99,7 @@ def gconnect():
 	# Store the access token in the session for later use.
 	login_session['credentials'] = credentials
 	login_session['gplus_id'] = gplus_id
+	
 
 	# Get user info
 	userinfo_url = "https://www.googleapis.com/oauth2/v1/userinfo"
@@ -111,6 +112,12 @@ def gconnect():
 	login_session['picture'] = data['picture']
 	login_session['email'] = data['email']
 
+	# See if user exists, if it doesn't make a new one.
+	user_id = getUserID(login_session['email'])
+	if not user_id:
+		user_id = createUser(login_session)
+	login_session['user_id'] = user_id
+
 	output = ''
 	output += '<h1>Welcome, '
 	output += login_session['username']
@@ -122,6 +129,61 @@ def gconnect():
 	print "done!"
 	return output
 
+# Build user information 
+def createUser(login_session):
+	newUser = User(name=login_session['username'], email=login_session[
+	               'email'], picture=login_session['picture'])
+	session.add(newUser)
+	session.commit()
+	user = session.query(User).filter_by(email=login_session['email']).one()
+	return user.id
+
+
+def getUserInfo(user_id):
+	user = session.query(User).filter_by(id=user_id).one()
+	return user
+
+
+def getUserID(email):
+	try:
+	    user = session.query(User).filter_by(email=email).one()
+	    return user.id
+	except:
+	    return None
+
+    # DISCONNECT - Revoke a current user's token and reset their login_session
+
+
+@app.route('/gdisconnect')
+def gdisconnect():
+	access_token = login_session.get('credentials')
+	print 'In gdisconnect access token is %s', access_token
+	print 'User name is: ' 
+	print login_session['username']
+	if access_token is None:
+		print 'Access Token is None'
+		response = make_response(json.dumps('Current user not connected.'), 401)
+		response.headers['Content-Type'] = 'application/json'
+		return response
+	url = 'https://accounts.google.com/o/oauth2/revoke?token=%s' % login_session['access_token']
+	h = httplib2.Http()
+	result = h.request(url, 'GET')[0]
+	print 'result is '
+	print result
+	if result['status'] == '200':
+		del login_session['access_token'] 
+		del login_session['gplus_id']
+		del login_session['username']
+		del login_session['email']
+		del login_session['picture']
+		response = make_response(json.dumps('Successfully disconnected.'), 200)
+		response.headers['Content-Type'] = 'application/json'
+		return response
+	else:
+
+		response = make_response(json.dumps('Failed to revoke token for given user.', 400))
+		response.headers['Content-Type'] = 'application/json'
+		return response
 
 # Home.  Display all categories with latest items.
 # This page serves as the home page.
@@ -151,10 +213,17 @@ def categoriesJSON():
 # EDIT items.
 @app.route('/catalog/<int:item_id>/edit/', methods=['GET', 'POST'])
 def item_Edit(item_id):
-
 	item_tobe_Edited = session.query(Item).filter_by(id=item_id).one()
 	categories = session.query(Category).all()
 
+	if 'username' not in login_session:
+	    return redirect('/login')
+	
+
+	# If user entering wasn't the one that created it, then tell them 
+	# they cannot edit the item.
+	if item_tobe_Edited.user_id != login_session['user_id']:
+		return "<script>function myFunction() {alert('You are not authorized to edit this restaurant. Please create your own restaurant in order to edit.');}</script><body onload='myFunction()''>"
 	if request.method == 'GET':
 		return render_template('edit_item.html', item_tobe_Edited=item_tobe_Edited, 
 								category_of_item=item_tobe_Edited.category_id, 
@@ -178,18 +247,22 @@ def item_Edit(item_id):
 # Add a new catalog item.  
 @app.route('/catalog/items/new/', methods=['GET', 'POST'])
 def item_Add():
-
+	if 'username' not in login_session:
+	    return redirect('/login')
 	categories = session.query(Category).all()
 
 	if request.method == 'GET':
 		return render_template('new_item.html', categories=categories)
 
 	if request.method == 'POST':
-		# Get all the categories to populate the drop down list.
+
+		# Get all the categories to populate the drop down list
+
 		newItem = Item(
 			name=request.form['name'], 
 			description=request.form['description'],
-			category_id=request.form['category_id']
+			category_id=request.form['category_id'],
+			user_id=login_session['user_id']
 			)
         session.add(newItem)
         session.commit()
@@ -199,9 +272,16 @@ def item_Add():
 # Delete an item.
 @app.route('/catalog/<int:item_id>/delete/',  methods=['GET', 'POST'])
 def item_Delete(item_id):
+	item_tobe_Deleted = session.query(Item).filter_by(id = item_id).one()
 
+	if 'username' not in login_session:
+	    return redirect('/login')
+
+	# User that didn't created the item cannot delete it.
+	if item_tobe_Deleted.user_id != login_session['user_id']:
+		return "<script>function myFunction() {alert('You are not authorized to delete this restaurant. Please create your own restaurant in order to delete.');}</script><body onload='myFunction()''>"
 	if request.method =='GET':
-		item_tobe_Deleted = session.query(Item).filter_by(id = item_id).one()
+		
 		item_category = session.query(Category).filter_by(id = item_tobe_Deleted.category_id).one()
 		
 		return render_template('delete_item.html', item = item_tobe_Deleted, item_category=item_category)
