@@ -1,21 +1,22 @@
-<html>
-<head>
-	<Title>Delete Item</Title>
-	<link rel=stylesheet type=text/css href="{{ url_for('static', filename='style.css') }}">
-	</head>
-<body>
-<h1> Are you sure you want to delete {{item.name}}? </h1>
+{% extends "main.html" %}
+{% block content %}
+{% include "header.html" %}
+<h2> Are you sure you want to delete {{item.name}}? </h2>
 
-<form action="{{ url_for('item_Delete', item_id = item.id)}}" method = 'post'>
+<form action="#" method = 'post'>
 
-<input type='submit', value = 'Delete'>
-
-
-
+	<a href = '{{url_for('catalog_Items_All', category_id=item_category.id )}}'>
+	<button type="submit" class="btn btn-default delete" id="submit" type="submit">
+	<span class="glyphicon glyphicon-trash" aria-hidden="true"><label for="delete"></span>Delete</button></label>
+	</a>
 
 </form>
+	<form action="{{url_for('catalog_Items_Description', category_id=item.category_id , item_id = item.id)}}">
+	<a href = '{{url_for('catalog_Items_All', category_id=item.category_id )}}'>
+		<button class="btn btn-default delete" type="submit">
+		<span class="glyphicon glyphicon-remove" aria-hidden="true"></span> Cancel</button>
+	</a>
+</form>
 
-<a href = '{{url_for('catalog_Items_All', category_id= item_category.id)}}'> Cancel </a>
-</body>
 
-</html>
+{% endblock %}

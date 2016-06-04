@@ -1,18 +1,44 @@
-<html>
-<head>
-	<link rel=stylesheet type=text/css href="{{ url_for('static', filename='style.css') }}">
-	<title>Item Description</title>
-	<h1>Items in Catalog - {{item_category.name}}</h1>
+{% extends "main.html" %}
+{% block content %}
+{% include "header.html" %}
+	<div class="row divider green">
+		<div class="col-md-12"></div>
+	</div>
+	<div class="row banner menu">
+		<div class="col-md-11 col-md-offset-1 padding-none">
+			<Title>Item Description</Title>
+			<h1>{{item_category.name}}</h1>
+		</div>
+	</div>
 
-</head>
+<div class = 'flash'>
+		      {% with messages = get_flashed_messages() %}
+      {% if messages %}
+          
+        <ul>
+        {% for message in messages %}
+            <li> <strong> {{ message }} </strong> </li>
+        {% endfor %}
+        </ul>
+        {% endif %}
+    {% endwith %}
 
-<body>
+</div>
+		<div class="row">
+			<div class="col-md-10">
+				<h2>Items - {{item.name}} created by: {{item_creator.name}}</h2>
 
-	<h2>{{item_description.name}}<h2>
-	<p>{{item_description.description}}</p>
-	<a href='{{url_for('item_Edit', item_id = item_description.id)}}'>Edit</a>
-	<a href='{{url_for('item_Delete', item_id = item_description.id)}}'>Delete</a>
-</body>
+							<div class="menu-item">
+								<h3>{{item.name}}</h3>
+								<p>{{item.description}}</p>
+								<a href='{{url_for('item_Edit', category_id = category_id, item_id=item.id ) }}'>Edit</a> | 
+								<a href='{{url_for('item_Delete', category_id = category_id, item_id=item.id ) }}'>Delete</a>
+							</div>
 
+			</div>
 
-</html>
+		</div>
+		<div class="col-md-1"></div>
+		</div>
+
+{% endblock %}

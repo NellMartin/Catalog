@@ -7,7 +7,7 @@
 	<div class="row banner menu">
 		<div class="col-md-11 col-md-offset-1 padding-none">
 			<Title>Item Description</Title>
-			<h1>{{category_name}}</h1>
+			<h1>Items in Catalog - {{item_category.name}}</h1>
 		</div>
 	</div>
 
@@ -25,16 +25,17 @@
 
 </div>
 
-	{% if items !=[] %}	
+	{% if item_category !=[] %}	
 		<div class="row">
-			<div class="col-md-10">
+			<div class="col-md-1"></div>
+			<div class="col-md-3">
 				<h2>Items in Category</h2>
-					{% for i in items %}
+					{% for i in item_category %}
 							<div class="menu-item">
 								<h3>{{i.name}}</h3>
 								<p>{{i.description}}</p>
-								<a href='{{url_for('item_Edit', category_id = category_id, item_id=i.id ) }}'>Edit</a> | 
-								<a href='{{url_for('item_Delete', category_id = category_id, item_id=i.id ) }}'>Delete</a>
+								<a href='{{url_for('item_Edit', item_id = item.id, category_id=i.category_id)}}'>Edit</a> | 
+								<a href='{{url_for('item_Delete', item_id = item.id, category_id=i.category_id)}}'>Delete</a>
 							</div>
 					{% endfor %}
 			</div>

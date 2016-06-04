@@ -1,0 +1,38 @@
+<html>
+<head>
+	<Title>Edit Catalog Item</Title>
+	<link rel=stylesheet type=text/css href="{{ url_for('static', filename='style.css') }}">
+	</head>
+	<body>
+
+<h1> Edit Catalog Item </h1>
+
+<form action="{{ url_for('item_Edit', item_id ={{ item_tobe_Edited.id }})}}" method = 'post'>
+
+<dl>
+	<dt>Name:</dt>
+		<dd><input type ='text' size='30' name='name' placeholder = '{{item_tobe_Edited.name }}'></dd>
+	<dt>Description:</dt>
+		<dd><textarea name = 'description' rows='5' cols='40' placeholder = '{{item_tobe_Edited.description }}'></textarea></dd>
+	<dt>Category:</dt>
+	    <dd>
+	          <select name="category_id">
+	          {% for each in categories %}
+	          	{% if item_tobe_Edited.category_id == each.id %}
+	          		<option value="{{each.id}}" selected>{{each.name}}</option>
+	          	{% endif %}
+	          		<option value="{{each.id}}" selected>{{each.name}}</option>
+
+	          {% endfor %}
+	          </select>
+	    </dd>
+
+</dl>
+
+
+<input type='submit' value='Edit'>
+
+<a href = "{{ url_for('item_Edit', item_id = item_tobe_Edited.id)}}"> Cancel </a>
+</form>
+</body>
+</html>

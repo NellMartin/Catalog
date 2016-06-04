@@ -23,19 +23,22 @@ session = DBSession()
 if len(session.query(User).all()) == 0:
     users = (
         {
-              'username': u'Nelitza_Martin',  # id=1
-              'last_name': u'Martin',
-              'first_name': u'Nelitza',
-              'email': u'mnelitza@gmail.com',
-              'picture': u'''https://lh3.googleusercontent.com/jp09Ya_jB7Opmq_'
-                     '7EMXfiA8M62UcLsCxCllvkzSSm2v6LA71ipwv-NwtmVhm4xqkPunRCSS3Aw=w1366-h768-rw-no'''
+              'name': 'Nell',  # id=1
+              'last_name': 'Martin',
+              'email': 'mnelitza@gmail.com',
+              'picture': 'https://lh3.googleusercontent.com/jp09Ya_jB7Opmq_7EMXfiA8M62UcLsCxCllvkzSSm2v6LA71ipwv-NwtmVhm4xqkPunRCSS3Aw=w1366-h768-rw-no'
         },
+             {
+              'name': 'Robo', # id=2
+              'email': 'tinnyTim@udacity.com',
+              'last_name': 'Barista',
+              'picture':'https://pbs.twimg.com/profile_images/2671170543/18debd694829ed78203a5a36dd364160_400x400.png'
+             }
     )
 
     for u in users:
-        user = User(username=u['username'],
+        user = User(name=u['name'],
                     last_name=u['last_name'],
-                    first_name=u['first_name'],
                     email=u['email'],
                     picture=u['picture'])
         session.add(user)
@@ -87,7 +90,7 @@ if len(session.query(Item).all()) == 0:
                   Odyssey Hawk tires, Cult 510 chain, Cult Tripod seat 
                   and Cult PC pedals.'''),
             'category_id': 1,
-            'user_id': 1
+            'user_id': 2
         },
         {
             'name': u'2015  Redline Flight Pro Bike',
@@ -105,7 +108,7 @@ if len(session.query(Item).all()) == 0:
                     tires, Tioga D-Spyder Pivotal seat, alloy platform pedals
                      and Redline chain adjusters. (19.3 lbs w/o pedals)'''),
             'category_id': 1,
-            'user_id': 1
+            'user_id': 2
         },
         {
             'name': u'Adventure Paddleboarding all Rounder X1 Sup',
