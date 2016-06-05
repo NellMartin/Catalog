@@ -75,7 +75,7 @@ def fbconnect():
     data = json.loads(result)
     print data
     login_session['provider'] = 'facebook'
-    login_session['username'] = data["email"]
+    login_session['username'] = data["name"]
     login_session['email'] = data["email"]
     login_session['facebook_id'] = data["id"]
 
@@ -301,7 +301,6 @@ def item_Edit(item_id):
 	item_tobe_Edited = session.query(Item).filter_by(id=item_id).one()
 	categories = session.query(Category).all()
 	creator = session.query(User).filter_by(id=item_tobe_Edited.user_id).one()
-	print creator.picture, "MI IMGEN"
 	if 'username' not in login_session:
 	    return redirect('/login')
 	# If user entering wasn't the one that created it, send a message 
