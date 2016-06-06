@@ -1,4 +1,3 @@
-# Imports neccessary to include external libraries.
 from flask import Flask, render_template, request, redirect, jsonify, url_for, flash
 from sqlalchemy import create_engine, asc
 from sqlalchemy.orm import sessionmaker
@@ -18,7 +17,7 @@ app = Flask(__name__)
 
 # Global dictionary to parse credentials for client_secrets.json file.
 CLIENT_ID = json.loads(
-    open('client_secrets.json', 'r').read())['web']['client_id']
+	open('client_secrets.json', 'r').read())['web']['client_id']
 APPLICATION_NAME = "Catalog"
 
 
@@ -29,17 +28,15 @@ Base.metadata.bind = engine
 DBSession = sessionmaker(bind=engine)
 session = DBSession()
 
-# Oauth routes handling.
-# Create a state token to prevent request forgery.
-# Store it in the session for later validation.
+""" Oauth routes handling.
+ Create a state token to prevent request forgery.
+ Store it in the session for later validation."""
 @app.route('/login')
 def showLogin():
-	state = ''.join(random.choice(string.ascii_uppercase + string.digits)
-	                for x in xrange(32))
-	login_session['state'] = state
-	return render_template('login.html', STATE=state)
-	# return render_template('login.html')
-    # return render_template('login.html')
+    state = ''.join(random.choice(string.ascii_uppercase + string.digits)
+    for x in xrange(32))
+        login_session['state'] = state
+        return render_template('login.html', STATE=state)
 
 # --- Facebook OAuth Code Handling ---
 @app.route('/fbconnect', methods=['POST'])
