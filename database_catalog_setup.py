@@ -16,14 +16,20 @@ class User(Base):
 	email = Column(String(250), nullable=False)
 	picture = Column(String)
 
+	@property
+	def serialize(self):
+		"""Return object data in easily serializable formart."""
+		return {
+		'User_id': self.id,	
+		'User_name' : self.name,	
+		}
+
 # Category table/class.
 class Category(Base):
 	__tablename__='category'
 
 	id = Column(Integer, primary_key=True, autoincrement=True)
 	name = Column(String(250), nullable=False)
-	# user_id = Column(Integer,ForeignKey('user.id'))
-	# user= relationship(User)
 
 	@property
 	def serialize(self):
@@ -32,6 +38,14 @@ class Category(Base):
 		'Category_id': self.id,	
 		'Category_name' : self.name,		
 		'Items': [i.serialize for i in self.items],		
+		}
+
+	@property
+	def serializeCategoryNames(self):
+		"""Return object data in easily serializable formart."""
+		return {
+		'Category_id': self.id,	
+		'Category_name' : self.name,		
 		}
 
 # Item table/class.
@@ -45,6 +59,7 @@ class Item(Base):
 	category_id = Column(Integer,ForeignKey('category.id'))
 	category = relationship(Category, backref=backref('items'))
 
+	# JSON property that returns basic Item data.
 	@property
 	def serialize(self):
 		"""Return object data in easily serializable formart."""
@@ -53,7 +68,20 @@ class Item(Base):
 		'item_name' : self.name,
 		'description': self.description,
 		'category_id':  self.category_id,
-        'user_id':      self.user_id
+		'user_id': self.user_id,       
+
+		}
+
+	# JSON property that returns basic Item data, except description field.
+	@property
+	def serializeItemSimple(self):
+		"""Return object data in easily serializable formart."""
+		return {
+		'item_id': self.id,
+		'item_name' : self.name,
+		'category_id':  self.category_id,
+		'user_id': self.user_id,       
+
 		}
 
 engine = create_engine('sqlite:///catalog.db')
